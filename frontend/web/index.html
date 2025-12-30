@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡️ Defiant | Payments with Attitude</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --defiant-primary: #6366f1;
+            --defiant-secondary: #8b5cf6;
+            --defiant-accent: #f59e0b;
+            --defiant-success: #10b981;
+            --defiant-danger: #ef4444;
+            --defiant-dark: #1f2937;
+            --defiant-light: #f9fafb;
+            --defiant-border: #e5e7eb;
+            --defiant-radius: 12px;
+            --defiant-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            --defiant-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--defiant-light);
+            color: var(--defiant-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .defiant-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .defiant-header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+        }
+
+        .defiant-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: var(--defiant-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .defiant-nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--defiant-primary);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--defiant-gradient);
+            border-radius: 1px;
+        }
+
+        /* Hero Section */
+        .defiant-hero {
+            padding: 5rem 0;
+            text-align: center;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .defiant-badge {
+            display: inline-block;
+            background: var(--defiant-gradient);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--defiant-primary), var(--defiant-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: var(--defiant-radius);
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--defiant-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--defiant-primary);
+            border: 2px solid var(--defiant-border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--defiant-primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        /* Features */
+        .defiant-features {
+            padding: 5rem 0;
+            background: #f8fafc;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--defiant-dark);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--defiant-radius);
+            box-shadow: var(--defiant-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--defiant-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--defiant-dark);
+        }
+
+        .feature-description {
+            color: #64748b;
+        }
+
+        /* Payment Demo */
+        .defiant-demo {
+            padding: 5rem 0;
+            background: white;
+        }
+
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .demo-content h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--defiant-dark);
+        }
+
+        .demo-preview {
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            border-radius: var(--defiant-radius);
+            padding: 2rem;
+            box-shadow: 
+                20px 20px 60px #d9d9d9,
+                -20px -20px 60px #ffffff;
+        }
+
+        /* Footer */
+        .defiant-footer {
+            background: var(--defiant-dark);
+            color: white;
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-column h4 {
+            font-size: 1.125rem;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #374151;
+            color: #9ca3af;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .defiant-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .demo-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .hero-cta {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Loading animation */
+        .defiant-loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--defiant-primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast notifications */
+        .defiant-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--defiant-radius);
+            box-shadow: var(--defiant-shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 10000;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+
+        .defiant-toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--defiant-success);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--defiant-danger);
+        }
+
+        .toast-warning {
+            border-left: 4px solid var(--defiant-accent);
+        }
+
+        .toast-info {
+            border-left: 4px solid var(--defiant-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="defiant-header">
+        <div class="defiant-container">
+            <div class="header-content">
+                <div class="defiant-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>DEFIANT</span>
+                </div>
+                <nav class="defiant-nav">
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#developers" class="nav-link">Developers</a>
+                    <a href="#pricing" class="nav-link">Pricing</a>
+                    <a href="#demo" class="nav-link active">Demo</a>
+                    <a href="#docs" class="nav-link">Documentation</a>
+                    <a href="login.html" class="nav-link">Sign In</a>
+                    <button class="btn btn-primary" onclick="openDashboard()">
+                        <i class="fas fa-rocket"></i>
+                        Get Started
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="defiant-hero">
+        <div class="hero-background"></div>
+        <div class="defiant-container">
+            <div class="hero-content">
+                <div class="defiant-badge">
+                    <i class="fas fa-bolt"></i>
+                    NEW • Built for Speed
+                </div>
+                <h1 class="hero-title">
+                    Payments with<br>
+                    <span style="color: #6366f1;">Attitude</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Defiant is the payment platform for developers who refuse to settle. 
+                    Built with WebAssembly and Rust for unmatched performance.
+                </p>
+                <div class="hero-cta">
+                    <button class="btn btn-primary" onclick="startIntegration()">
+                        <i class="fas fa-code"></i>
+                        Start Integrating
+                    </button>
+                    <button class="btn btn-secondary" onclick="openDemo()">
+                        <i class="fas fa-play-circle"></i>
+                        Live Demo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="defiant-features">
+        <div class="defiant-container">
+            <h2 class="section-title">Built Different</h2>
+            <p class="section-subtitle">
+                We don't just process payments. We redefine what's possible.
+            </p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="feature-title">WebAssembly Fast</h3>
+                    <p class="feature-description">
+                        Frontend compiled to WebAssembly for near-native performance. 
+                        Process payments in milliseconds, not seconds.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Rust-Secure</h3>
+                    <p class="feature-description">
+                        Memory-safe backend written in Rust. Zero-cost abstractions 
+                        with guaranteed thread safety.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Real-Time Analytics</h3>
+                    <p class="feature-description">
+                        Live dashboard with WebSocket connections. Watch payments 
+                        flow in real-time with our 3D visualization engine.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fab fa-bitcoin"></i>
+                    </div>
+                    <h3 class="feature-title">Crypto Native</h3>
+                    <p class="feature-description">
+                        Built-in support for Bitcoin, Ethereum, and 50+ cryptocurrencies. 
+                        Smart contract integration included.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="defiant-demo">
+        <div class="defiant-container">
+            <h2 class="section-title">Try It Live</h2>
+            <p class="section-subtitle">
+                Experience the fastest payment form ever built.
+            </p>
+            <div class="demo-container">
+                <div class="demo-content">
+                    <h3>Defiant Elements</h3>
+                    <p>Our WebAssembly-powered payment form loads in under 50ms and processes payments in real-time.</p>
+                    <ul style="margin: 1.5rem 0; list-style: none;">
+                        <li style="margin-bottom: 0.75rem;">
+                            <i class="fas fa-check-circle" style="color: var(--defiant-success); margin-right: 10px;"></i>
+                            PCI DSS Level 1 compliant
+                        </li>
+                        <li style="margin-bottom: 0.75rem;">
+                            <i class="fas fa-check-circle" style="color: var(--defiant-success); margin-right: 10px;"></i>
+                            256-bit encryption
+                        </li>
+                        <li style="margin-bottom: 0.75rem;">
+                            <i class="fas fa-check-circle" style="color: var(--defiant-success); margin-right: 10px;"></i>
+                            Fraud detection powered by ML
+                        </li>
+                        <li style="margin-bottom: 0.75rem;">
+                            <i class="fas fa-check-circle" style="color: var(--defiant-success); margin-right: 10px;"></i>
+                            Multi-currency support
+                        </li>
+                    </ul>
+                </div>
+                <div class="demo-preview">
+                    <div id="payment-form-container">
+                        <!-- Payment form will be rendered here by WebAssembly -->
+                        <div class="loading-placeholder" style="text-align: center; padding: 3rem;">
+                            <div class="defiant-loader" style="margin: 0 auto 1rem;"></div>
+                            <p>Loading Defiant Payment Form...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Preview -->
+    <section class="defiant-demo" style="background: #f8fafc;">
+        <div class="defiant-container">
+            <h2 class="section-title">Dashboard Preview</h2>
+            <p class="section-subtitle">
+                Real-time analytics and management interface.
+            </p>
+            <div id="dashboard-preview" style="background: white; border-radius: var(--defiant-radius); 
+                padding: 2rem; box-shadow: var(--defiant-shadow); min-height: 400px;">
+                <!-- Dashboard will be loaded here -->
+                <div style="text-align: center; padding: 4rem;">
+                    <button class="btn btn-primary" onclick="loadDashboard()">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Load Live Dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="defiant-footer">
+        <div class="defiant-container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <div class="defiant-logo" style="font-size: 1.25rem; margin-bottom: 1.5rem;">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>DEFIANT</span>
+                    </div>
+                    <p style="color: #9ca3af; margin-bottom: 1.5rem;">
+                        The most defiant way to accept payments online.
+                    </p>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="#" style="color: #9ca3af; font-size: 1.25rem;">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" style="color: #9ca3af; font-size: 1.25rem;">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" style="color: #9ca3af; font-size: 1.25rem;">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">API</a></li>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Status</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Privacy</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">GDPR</a></li>
+                        <li><a href="#">Compliance</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Defiant Payments. All rights reserved. Built with ❤️ and WebAssembly.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- WebAssembly Module -->
+    <script>
+        // Configuration
+        const DefiantConfig = {
+            apiUrl: 'http://localhost:8080',
+            apiKey: 'demo_key_1234567890',
+            debug: true,
+            theme: 'dark'
+        };
+
+        // Global Defiant object
+        window.Defiant = {
+            app: null,
+            initialized: false,
+            
+            // Initialize the app
+            async init() {
+                try {
+                    console.log('🛡️ Initializing Defiant...');
+                    
+                    // Load WebAssembly module
+                    const module = await DefiantWasm();
+                    
+                    // Initialize app with config
+                    const result = module.initializeApp(DefiantConfig);
+                    
+                    if (result.success) {
+                        this.app = module;
+                        this.initialized = true;
+                        console.log('✅ Defiant initialized successfully');
+                        
+                        // Render payment form
+                        this.renderPaymentForm();
+                        
+                        // Load dashboard if requested
+                        if (window.location.hash === '#dashboard') {
+                            this.loadDashboard();
+                        }
+                        
+                        this.showToast('Defiant loaded successfully!', 'success');
+                    } else {
+                        console.error('❌ Failed to initialize Defiant:', result.error);
+                        this.showToast('Failed to initialize Defiant: ' + result.error, 'error');
+                    }
+                } catch (error) {
+                    console.error('❌ Error loading Defiant:', error);
+                    this.showToast('Error loading Defiant: ' + error.message, 'error');
+                }
+            },
+            
+            // Render payment form
+            async renderPaymentForm() {
+                if (!this.initialized || !this.app) return;
+                
+                try {
+                    const options = {
+                        amount: 1999, // $19.99
+                        currency: 'USD',
+                        theme: 'dark'
+                    };
+                    
+                    const result = this.app.renderPaymentForm('payment-form-container', options);
+                    
+                    if (result.success) {
+                        console.log('✅ Payment form rendered');
+                    } else {
+                        console.error('❌ Failed to render payment form:', result.error);
+                    }
+                } catch (error) {
+                    console.error('❌ Error rendering payment form:', error);
+                }
+            },
+            
+            // Load dashboard
+            async loadDashboard() {
+                if (!this.initialized || !this.app) return;
+                
+                try {
+                    const filters = {
+                        startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+                        endDate: new Date().toISOString(),
+                        status: 'all'
+                    };
+                    
+                    const result = this.app.renderDashboard('dashboard-preview', filters);
+                    
+                    if (result.success) {
+                        console.log('✅ Dashboard rendered');
+                        this.showToast('Dashboard loaded successfully!', 'success');
+                    } else {
+                        console.error('❌ Failed to render dashboard:', result.error);
+                        this.showToast('Failed to load dashboard', 'error');
+                    }
+                } catch (error) {
+                    console.error('❌ Error loading dashboard:', error);
+                    this.showToast('Error loading dashboard', 'error');
+                }
+            },
+            
+            // Create a test payment
+            async createTestPayment() {
+                if (!this.initialized || !this.app) return;
+                
+                try {
+                    const paymentData = {
+                        amount: 1999,
+                        currency: 'USD',
+                        description: 'Test payment from Defiant demo'
+                    };
+                    
+                    const result = await this.app.createPayment(paymentData);
+                    
+                    if (result.success) {
+                        this.showToast('Payment created successfully! ID: ' + result.id, 'success');
+                        console.log('✅ Payment created:', result);
+                    } else {
+                        this.showToast('Payment failed: ' + result.error, 'error');
+                        console.error('❌ Payment failed:', result.error);
+                    }
+                } catch (error) {
+                    console.error('❌ Error creating payment:', error);
+                    this.showToast('Error creating payment', 'error');
+                }
+            },
+            
+            // Subscribe to events
+            subscribeToEvents() {
+                if (!this.initialized || !this.app) return;
+                
+                this.app.subscribeToEvents('payment.created', (event, data) => {
+                    console.log('📦 Payment event:', event, data);
+                    this.showToast('New payment received!', 'success');
+                });
+                
+                this.app.subscribeToEvents('websocket.connected', (event, data) => {
+                    console.log('🔌 WebSocket connected:', data);
+                });
+            },
+            
+            // Show toast notification
+            showToast(message, type = 'info') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `defiant-toast toast-${type}`;
+                toast.innerHTML = `
+                    <i class="fas fa-${this.getToastIcon(type)}"></i>
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.remove()" style="margin-left: auto; background: none; border: none; color: #666; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                container.appendChild(toast);
+                
+                // Show with animation
+                setTimeout(() => toast.classList.add('show'), 10);
+                
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            },
+            
+            getToastIcon(type) {
+                switch(type) {
+                    case 'success': return 'check-circle';
+                    case 'error': return 'exclamation-circle';
+                    case 'warning': return 'exclamation-triangle';
+                    default: return 'info-circle';
+                }
+            },
+            
+            // Validate card
+            async validateCard(cardData) {
+                if (!this.initialized || !this.app) return;
+                
+                try {
+                    const result = this.app.validateCard(cardData);
+                    return result;
+                } catch (error) {
+                    console.error('❌ Error validating card:', error);
+                    return { valid: false, error: error.message };
+                }
+            }
+        };
+
+        // Global functions for buttons
+        function openDashboard() {
+            window.location.hash = 'dashboard';
+            if (window.Defiant.initialized) {
+                window.Defiant.loadDashboard();
+            } else {
+                window.Defiant.init().then(() => window.Defiant.loadDashboard());
+            }
+        }
+
+        function startIntegration() {
+            window.open('https://github.com/yourusername/defiant', '_blank');
+        }
+
+        function openDemo() {
+            if (window.Defiant.initialized) {
+                window.Defiant.createTestPayment();
+            } else {
+                window.Defiant.showToast('Please wait for Defiant to initialize', 'warning');
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Show loading state
+            const paymentContainer = document.getElementById('payment-form-container');
+            paymentContainer.innerHTML = `
+                <div style="text-align: center; padding: 3rem; color: #666;">
+                    <div class="defiant-loader" style="margin: 0 auto 1rem;"></div>
+                    <p>Loading Defiant WebAssembly Engine...</p>
+                    <small>This may take a moment</small>
+                </div>
+            `;
+            
+            // Initialize Defiant
+            window.Defiant.init().then(() => {
+                // Subscribe to events
+                window.Defiant.subscribeToEvents();
+                
+                // Hide loading state
+                paymentContainer.innerHTML = '';
+            });
+        });
+
+        // Listen for hash changes
+        window.addEventListener('hashchange', () => {
+            if (window.location.hash === '#dashboard' && window.Defiant.initialized) {
+                window.Defiant.loadDashboard();
+            }
+        });
+    </script>
+
+    <!-- Load WebAssembly module -->
+    <script src="defiant_wasm.js"></script>
+</body>
+</html>

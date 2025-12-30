@@ -1,0 +1,264 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_VERSION: 1.70.0
+  NODE_VERSION: 18
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: defiant
+          POSTGRES_PASSWORD: defiant123
+          POSTGRES_DB: defiant
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: ${{ env.RUST_VERSION }}
+        override: true
+        components: rustfmt, clippy
+        
+    - name: Cache Rust dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          backend/target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('backend/Cargo.lock') }}
+        
+    - name: Install SQLx CLI
+      run: cargo install sqlx-cli --no-default-features --features postgres
+      
+    - name: Run database migrations
+      working-directory: ./backend
+      run: |
+        DATABASE_URL="postgres://defiant:defiant123@localhost:5432/defiant" \
+        sqlx migrate run
+        
+    - name: Build backend
+      working-directory: ./backend
+      run: cargo build --verbose --release
+      
+    - name: Run tests
+      working-directory: ./backend
+      run: cargo test --verbose --release
+      env:
+        DATABASE_URL: "postgres://defiant:defiant123@localhost:5432/defiant"
+        REDIS_URL: "redis://localhost:6379"
+        
+    - name: Run clippy
+      working-directory: ./backend
+      run: cargo clippy -- -D warnings
+      
+    - name: Run rustfmt
+      working-directory: ./backend
+      run: cargo fmt -- --check
+      
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./backend/coverage/lcov.info
+        flags: unittests
+        name: backend-coverage
+        
+  frontend:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Emscripten
+      uses: mymindstorm/setup-emsdk@v11
+      with:
+        version: 3.1.34
+        
+    - name: Cache Emscripten
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.emscripten_cache
+          frontend/build
+        key: ${{ runner.os }}-emscripten-${{ hashFiles('frontend/CMakeLists.txt', 'frontend/src/**') }}
+        
+    - name: Build frontend
+      working-directory: ./frontend
+      run: |
+        mkdir -p build
+        cd build
+        emcmake cmake .. -DCMAKE_BUILD_TYPE=Release
+        cmake --build . --config Release --parallel 4
+        
+    - name: Optimize WebAssembly
+      working-directory: ./frontend/build
+      run: |
+        wasm-opt -O3 defiant_wasm.wasm -o defiant_wasm_opt.wasm
+        mv defiant_wasm_opt.wasm defiant_wasm.wasm
+        
+    - name: Test WebAssembly
+      working-directory: ./frontend
+      run: |
+        node -e "const fs = require('fs'); \
+          const wasm = fs.readFileSync('build/defiant_wasm.wasm'); \
+          console.log('WASM size:', wasm.length, 'bytes'); \
+          if (wasm.length > 5 * 1024 * 1024) { \
+            throw new Error('WASM file too large'); \
+          }"
+          
+  shared:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: ${{ env.RUST_VERSION }}
+        override: true
+        
+    - name: Build FFI library
+      working-directory: ./shared
+      run: |
+        cargo build --release
+        cbindgen --config cbindgen.toml --crate shared --output include/defiant_ffi.h
+        
+    - name: Test C bindings
+      working-directory: ./shared
+      run: |
+        gcc -c test/test_ffi.c -I./include
+        ar rcs libdefiant_ffi.a target/release/libshared.a
+        gcc test/test_ffi.o -L. -ldefiant_ffi -o test_ffi
+        ./test_ffi
+        
+  integration:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend, shared]
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: defiant
+          POSTGRES_PASSWORD: defiant123
+          POSTGRES_DB: defiant
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Docker Compose
+      run: |
+        cd docker
+        docker-compose up -d
+        
+    - name: Run integration tests
+      run: |
+        sleep 10  # Wait for services to start
+        curl -f http://localhost:8080/health
+        curl -f http://localhost/health
+        
+    - name: Load test
+      uses: jpetazzo/container.training-attack@master
+      with:
+        target-url: http://localhost:8080/api/v1/health
+        
+  security:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Run cargo audit
+      uses: actions-rs/audit-check@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Run cargo-deny
+      uses: EmbarkStudios/cargo-deny-action@v1
+      with:
+        command: check bans licenses sources
+        
+    - name: Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy results
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
+        
+  docker:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+      
+    - name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        
+    - name: Build and push backend
+      uses: docker/build-push-action@v4
+      with:
+        context: ./backend
+        file: ./docker/backend.Dockerfile
+        push: true
+        tags: |
+          your-registry/defiant-backend:latest
+          your-registry/defiant-backend:${{ github.sha }}
+          
+    - name: Build and push frontend
+      uses: docker/build-push-action@v4
+      with:
+        context: ./frontend
+        file: ./docker/frontend.Dockerfile
+        push: true
+        tags: |
+          your-registry/defiant-frontend:latest
+          your-registry/defiant-frontend:${{ github.sha }}

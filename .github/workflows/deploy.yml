@@ -1,0 +1,149 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER: defiant-cluster
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    environment: staging
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+        
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+      
+    - name: Build, tag, and push backend to ECR
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: defiant-backend
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        cd backend
+        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -f ../docker/backend.Dockerfile .
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        
+    - name: Update ECS service
+      run: |
+        aws ecs update-service \
+          --cluster defiant-staging \
+          --service defiant-backend \
+          --force-new-deployment \
+          --region ${{ env.AWS_REGION }}
+          
+    - name: Wait for deployment
+      run: |
+        aws ecs wait services-stable \
+          --cluster defiant-staging \
+          --services defiant-backend \
+          --region ${{ env.AWS_REGION }}
+          
+    - name: Run smoke tests
+      run: |
+        curl -f https://api.staging.defiant.com/health
+        
+  deploy-production:
+    runs-on: ubuntu-latest
+    environment: production
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Kubernetes
+      uses: azure/setup-kubectl@v3
+      
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+        
+    - name: Update kubeconfig
+      run: |
+        aws eks update-kubeconfig \
+          --region ${{ env.AWS_REGION }} \
+          --name ${{ env.EKS_CLUSTER }}
+          
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -f deploy/kubernetes/production/
+        kubectl rollout status deployment/defiant-backend -n production --timeout=300s
+        
+    - name: Run canary tests
+      run: |
+        ./scripts/canary-test.sh
+        
+    - name: Notify Slack
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        text: 'Deployment to production completed'
+        channel: '#deployments'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        
+  rollback:
+    runs-on: ubuntu-latest
+    if: failure()
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+        
+    - name: Rollback ECS service
+      run: |
+        # Get previous task definition
+        PREVIOUS_TASK=$(aws ecs describe-services \
+          --cluster defiant-${{ github.event.inputs.environment || 'staging' }} \
+          --services defiant-backend \
+          --query 'services[0].deployments[?status == \'PRIMARY\'].taskDefinition' \
+          --output text | awk -F'/' '{print $2}' | awk -F':' '{print $1}')
+          
+        # Update service to use previous task definition
+        aws ecs update-service \
+          --cluster defiant-${{ github.event.inputs.environment || 'staging' }} \
+          --service defiant-backend \
+          --task-definition $PREVIOUS_TASK \
+          --region ${{ env.AWS_REGION }}
+          
+    - name: Notify rollback
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        text: 'Deployment failed, rollback initiated'
+        channel: '#deployments'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

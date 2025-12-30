@@ -1,0 +1,157 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: defiant-postgres
+    environment:
+      POSTGRES_USER: defiant
+      POSTGRES_PASSWORD: defiant123
+      POSTGRES_DB: defiant
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - defiant-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U defiant"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and WebSockets
+  redis:
+    image: redis:7-alpine
+    container_name: defiant-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - defiant-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Rust Backend
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+      target: production
+    container_name: defiant-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_URL=postgres://defiant:defiant123@postgres:5432/defiant
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=super-secret-jwt-key-change-in-production
+      - HOST=0.0.0.0
+      - PORT=8080
+      - RUST_LOG=info,defiant_backend=debug
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../backend/config:/app/config:ro
+    networks:
+      - defiant-network
+    restart: unless-stopped
+
+  # Nginx for frontend and reverse proxy
+  nginx:
+    image: nginx:1.23-alpine
+    container_name: defiant-nginx
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ../frontend/web:/usr/share/nginx/html:ro
+      - ./nginx/logs:/var/log/nginx
+    networks:
+      - defiant-network
+    restart: unless-stopped
+
+  # Frontend Builder (WebAssembly)
+  frontend-builder:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: defiant-frontend-builder
+    volumes:
+      - ../frontend:/app
+      - frontend-build:/app/build
+    networks:
+      - defiant-network
+    command: sh -c "mkdir -p build && cd build && emcmake cmake .. && cmake --build ."
+
+  # Monitoring (Prometheus + Grafana)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: defiant-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - defiant-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: defiant-grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - defiant-network
+    restart: unless-stopped
+
+  # MailHog for email testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: defiant-mailhog
+    ports:
+      - "8025:8025" # Web UI
+      - "1025:1025" # SMTP server
+    networks:
+      - defiant-network
+
+networks:
+  defiant-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  frontend-build:
+  prometheus_data:
+  grafana_data:

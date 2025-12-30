@@ -1,0 +1,777 @@
+/* Defiant Design System */
+:root {
+  /* Colors */
+  --defiant-primary-50: #eef2ff;
+  --defiant-primary-100: #e0e7ff;
+  --defiant-primary-200: #c7d2fe;
+  --defiant-primary-300: #a5b4fc;
+  --defiant-primary-400: #818cf8;
+  --defiant-primary-500: #6366f1;
+  --defiant-primary-600: #4f46e5;
+  --defiant-primary-700: #4338ca;
+  --defiant-primary-800: #3730a3;
+  --defiant-primary-900: #312e81;
+  
+  --defiant-secondary-50: #f5f3ff;
+  --defiant-secondary-100: #ede9fe;
+  --defiant-secondary-200: #ddd6fe;
+  --defiant-secondary-300: #c4b5fd;
+  --defiant-secondary-400: #a78bfa;
+  --defiant-secondary-500: #8b5cf6;
+  --defiant-secondary-600: #7c3aed;
+  --defiant-secondary-700: #6d28d9;
+  --defiant-secondary-800: #5b21b6;
+  --defiant-secondary-900: #4c1d95;
+  
+  /* Semantic Colors */
+  --defiant-success: #10b981;
+  --defiant-warning: #f59e0b;
+  --defiant-danger: #ef4444;
+  --defiant-info: #3b82f6;
+  
+  /* Neutrals */
+  --defiant-gray-50: #f9fafb;
+  --defiant-gray-100: #f3f4f6;
+  --defiant-gray-200: #e5e7eb;
+  --defiant-gray-300: #d1d5db;
+  --defiant-gray-400: #9ca3af;
+  --defiant-gray-500: #6b7280;
+  --defiant-gray-600: #4b5563;
+  --defiant-gray-700: #374151;
+  --defiant-gray-800: #1f2937;
+  --defiant-gray-900: #111827;
+  
+  /* Gradients */
+  --defiant-gradient-primary: linear-gradient(135deg, var(--defiant-primary-500), var(--defiant-secondary-500));
+  --defiant-gradient-dark: linear-gradient(135deg, var(--defiant-primary-700), var(--defiant-secondary-700));
+  
+  /* Shadows */
+  --defiant-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --defiant-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --defiant-shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --defiant-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --defiant-shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  
+  /* Border Radius */
+  --defiant-radius-sm: 0.375rem;
+  --defiant-radius: 0.5rem;
+  --defiant-radius-md: 0.75rem;
+  --defiant-radius-lg: 1rem;
+  --defiant-radius-xl: 1.5rem;
+  --defiant-radius-full: 9999px;
+  
+  /* Transitions */
+  --defiant-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --defiant-transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --defiant-transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Typography */
+  --defiant-font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --defiant-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  
+  /* Spacing */
+  --defiant-space-1: 0.25rem;
+  --defiant-space-2: 0.5rem;
+  --defiant-space-3: 0.75rem;
+  --defiant-space-4: 1rem;
+  --defiant-space-6: 1.5rem;
+  --defiant-space-8: 2rem;
+  --defiant-space-12: 3rem;
+  --defiant-space-16: 4rem;
+  --defiant-space-20: 5rem;
+  --defiant-space-24: 6rem;
+}
+
+/* Base Styles */
+.defiant-root {
+  font-family: var(--defiant-font-sans);
+  line-height: 1.6;
+  color: var(--defiant-gray-800);
+  background: var(--defiant-gray-50);
+}
+
+/* Typography */
+.defiant-heading-1 {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.defiant-heading-2 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+}
+
+.defiant-heading-3 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.defiant-heading-4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.defiant-body-lg {
+  font-size: 1.125rem;
+  line-height: 1.75;
+}
+
+.defiant-body {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.defiant-body-sm {
+  font-size: 0.875rem;
+  line-height: 1.75;
+}
+
+.defiant-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--defiant-gray-700);
+  display: block;
+  margin-bottom: var(--defiant-space-2);
+}
+
+/* Buttons */
+.defiant-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--defiant-space-2);
+  padding: var(--defiant-space-3) var(--defiant-space-6);
+  border-radius: var(--defiant-radius);
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--defiant-transition);
+  border: 1px solid transparent;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.defiant-button:focus {
+  outline: 2px solid var(--defiant-primary-500);
+  outline-offset: 2px;
+}
+
+.defiant-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.defiant-button-primary {
+  background: var(--defiant-gradient-primary);
+  color: white;
+  border: none;
+  box-shadow: var(--defiant-shadow);
+}
+
+.defiant-button-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--defiant-shadow-md);
+}
+
+.defiant-button-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.defiant-button-secondary {
+  background: white;
+  color: var(--defiant-primary-700);
+  border: 1px solid var(--defiant-gray-300);
+}
+
+.defiant-button-secondary:hover:not(:disabled) {
+  border-color: var(--defiant-primary-500);
+  background: var(--defiant-primary-50);
+}
+
+.defiant-button-outline {
+  background: transparent;
+  color: var(--defiant-primary-700);
+  border: 1px solid var(--defiant-primary-500);
+}
+
+.defiant-button-outline:hover:not(:disabled) {
+  background: var(--defiant-primary-50);
+}
+
+.defiant-button-danger {
+  background: var(--defiant-danger);
+  color: white;
+  border: none;
+}
+
+.defiant-button-danger:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.defiant-button-sm {
+  padding: var(--defiant-space-2) var(--defiant-space-3);
+  font-size: 0.75rem;
+}
+
+.defiant-button-lg {
+  padding: var(--defiant-space-4) var(--defiant-space-8);
+  font-size: 1rem;
+}
+
+.defiant-button-loading {
+  position: relative;
+  color: transparent;
+}
+
+.defiant-button-spinner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+}
+
+/* Forms */
+.defiant-input-container {
+  margin-bottom: var(--defiant-space-4);
+}
+
+.defiant-input {
+  width: 100%;
+  padding: var(--defiant-space-3) var(--defiant-space-4);
+  border: 1px solid var(--defiant-gray-300);
+  border-radius: var(--defiant-radius);
+  font-size: 0.875rem;
+  transition: border-color var(--defiant-transition);
+  background: white;
+}
+
+.defiant-input:focus {
+  outline: none;
+  border-color: var(--defiant-primary-500);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.defiant-input-error {
+  border-color: var(--defiant-danger);
+}
+
+.defiant-input-error:focus {
+  border-color: var(--defiant-danger);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.defiant-input-error-message {
+  color: var(--defiant-danger);
+  font-size: 0.75rem;
+  margin-top: var(--defiant-space-1);
+}
+
+.defiant-input-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--defiant-space-2);
+}
+
+.defiant-input-hint {
+  font-size: 0.75rem;
+  color: var(--defiant-gray-500);
+}
+
+/* Cards */
+.defiant-card {
+  background: white;
+  border-radius: var(--defiant-radius-lg);
+  box-shadow: var(--defiant-shadow);
+  overflow: hidden;
+  transition: transform var(--defiant-transition), box-shadow var(--defiant-transition);
+}
+
+.defiant-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--defiant-shadow-lg);
+}
+
+.defiant-card-header {
+  padding: var(--defiant-space-6) var(--defiant-space-6) 0;
+}
+
+.defiant-card-body {
+  padding: var(--defiant-space-6);
+}
+
+.defiant-card-footer {
+  padding: 0 var(--defiant-space-6) var(--defiant-space-6);
+  border-top: 1px solid var(--defiant-gray-200);
+}
+
+.defiant-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--defiant-gray-900);
+  margin-bottom: var(--defiant-space-2);
+}
+
+.defiant-card-subtitle {
+  font-size: 0.875rem;
+  color: var(--defiant-gray-500);
+  margin-bottom: var(--defiant-space-4);
+}
+
+/* Payment Form Specific */
+.defiant-payment-form {
+  background: white;
+  border-radius: var(--defiant-radius-xl);
+  box-shadow: var(--defiant-shadow-xl);
+  padding: var(--defiant-space-8);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.defiant-payment-header {
+  text-align: center;
+  margin-bottom: var(--defiant-space-8);
+}
+
+.defiant-payment-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--defiant-gray-900);
+  margin-bottom: var(--defiant-space-2);
+}
+
+.defiant-payment-amount {
+  font-size: 3rem;
+  font-weight: 800;
+  background: var(--defiant-gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: var(--defiant-space-4) 0;
+}
+
+.defiant-payment-fieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 var(--defiant-space-6);
+}
+
+.defiant-payment-legend {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--defiant-gray-700);
+  margin-bottom: var(--defiant-space-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.defiant-payment-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--defiant-space-4);
+  margin-bottom: var(--defiant-space-4);
+}
+
+.defiant-payment-actions {
+  margin-top: var(--defiant-space-8);
+}
+
+.defiant-payment-security {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--defiant-space-2);
+  margin-top: var(--defiant-space-4);
+  font-size: 0.75rem;
+  color: var(--defiant-gray-500);
+}
+
+/* Dashboard Components */
+.defiant-dashboard {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+  background: var(--defiant-gray-50);
+}
+
+.defiant-sidebar {
+  background: white;
+  border-right: 1px solid var(--defiant-gray-200);
+  padding: var(--defiant-space-6);
+}
+
+.defiant-sidebar-header {
+  padding-bottom: var(--defiant-space-6);
+  border-bottom: 1px solid var(--defiant-gray-200);
+  margin-bottom: var(--defiant-space-6);
+}
+
+.defiant-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--defiant-space-1);
+}
+
+.defiant-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--defiant-space-3);
+  padding: var(--defiant-space-3) var(--defiant-space-4);
+  border-radius: var(--defiant-radius);
+  color: var(--defiant-gray-600);
+  text-decoration: none;
+  transition: all var(--defiant-transition);
+}
+
+.defiant-nav-item:hover {
+  background: var(--defiant-gray-100);
+  color: var(--defiant-gray-900);
+}
+
+.defiant-nav-item.active {
+  background: var(--defiant-primary-50);
+  color: var(--defiant-primary-700);
+  font-weight: 500;
+}
+
+.defiant-main-content {
+  padding: var(--defiant-space-6);
+  overflow-y: auto;
+}
+
+.defiant-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--defiant-space-8);
+}
+
+.defiant-dashboard-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--defiant-gray-900);
+}
+
+.defiant-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--defiant-space-6);
+  margin-bottom: var(--defiant-space-8);
+}
+
+.defiant-stat-card {
+  background: white;
+  padding: var(--defiant-space-6);
+  border-radius: var(--defiant-radius-lg);
+  box-shadow: var(--defiant-shadow);
+}
+
+.defiant-stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--defiant-space-4);
+}
+
+.defiant-stat-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--defiant-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.defiant-stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--defiant-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.defiant-stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--defiant-gray-900);
+  margin-bottom: var(--defiant-space-2);
+}
+
+.defiant-stat-change {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.defiant-stat-change.positive {
+  color: var(--defiant-success);
+}
+
+.defiant-stat-change.negative {
+  color: var(--defiant-danger);
+}
+
+/* Tables */
+.defiant-table-container {
+  background: white;
+  border-radius: var(--defiant-radius-lg);
+  box-shadow: var(--defiant-shadow);
+  overflow: hidden;
+}
+
+.defiant-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.defiant-table thead {
+  background: var(--defiant-gray-50);
+}
+
+.defiant-table th {
+  padding: var(--defiant-space-4) var(--defiant-space-6);
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--defiant-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--defiant-gray-200);
+}
+
+.defiant-table td {
+  padding: var(--defiant-space-4) var(--defiant-space-6);
+  border-bottom: 1px solid var(--defiant-gray-200);
+}
+
+.defiant-table tbody tr:hover {
+  background: var(--defiant-gray-50);
+}
+
+.defiant-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Status Badges */
+.defiant-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--defiant-space-1) var(--defiant-space-3);
+  border-radius: var(--defiant-radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.defiant-badge-success {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--defiant-success);
+}
+
+.defiant-badge-warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--defiant-warning);
+}
+
+.defiant-badge-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--defiant-danger);
+}
+
+.defiant-badge-info {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--defiant-info);
+}
+
+/* Animations */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.defiant-animate-fadeIn {
+  animation: fadeIn var(--defiant-transition) ease-out;
+}
+
+.defiant-animate-slideInUp {
+  animation: slideInUp var(--defiant-transition) ease-out;
+}
+
+.defiant-animate-slideInDown {
+  animation: slideInDown var(--defiant-transition) ease-out;
+}
+
+.defiant-animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .defiant-root {
+    color: var(--defiant-gray-100);
+    background: var(--defiant-gray-900);
+  }
+  
+  .defiant-card,
+  .defiant-payment-form,
+  .defiant-sidebar,
+  .defiant-stat-card,
+  .defiant-table-container {
+    background: var(--defiant-gray-800);
+    color: var(--defiant-gray-100);
+  }
+  
+  .defiant-input {
+    background: var(--defiant-gray-800);
+    border-color: var(--defiant-gray-700);
+    color: var(--defiant-gray-100);
+  }
+  
+  .defiant-table thead {
+    background: var(--defiant-gray-800);
+  }
+  
+  .defiant-table th {
+    color: var(--defiant-gray-400);
+  }
+  
+  .defiant-table tbody tr:hover {
+    background: var(--defiant-gray-700);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .defiant-payment-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .defiant-dashboard {
+    grid-template-columns: 1fr;
+  }
+  
+  .defiant-sidebar {
+    display: none;
+  }
+  
+  .defiant-heading-1 {
+    font-size: 2rem;
+  }
+  
+  .defiant-heading-2 {
+    font-size: 1.75rem;
+  }
+}
+
+/* Utility Classes */
+.defiant-text-center {
+  text-align: center;
+}
+
+.defiant-text-right {
+  text-align: right;
+}
+
+.defiant-text-left {
+  text-align: left;
+}
+
+.defiant-mt-1 { margin-top: var(--defiant-space-1); }
+.defiant-mt-2 { margin-top: var(--defiant-space-2); }
+.defiant-mt-4 { margin-top: var(--defiant-space-4); }
+.defiant-mt-6 { margin-top: var(--defiant-space-6); }
+.defiant-mt-8 { margin-top: var(--defiant-space-8); }
+
+.defiant-mb-1 { margin-bottom: var(--defiant-space-1); }
+.defiant-mb-2 { margin-bottom: var(--defiant-space-2); }
+.defiant-mb-4 { margin-bottom: var(--defiant-space-4); }
+.defiant-mb-6 { margin-bottom: var(--defiant-space-6); }
+.defiant-mb-8 { margin-bottom: var(--defiant-space-8); }
+
+.defiant-p-1 { padding: var(--defiant-space-1); }
+.defiant-p-2 { padding: var(--defiant-space-2); }
+.defiant-p-4 { padding: var(--defiant-space-4); }
+.defiant-p-6 { padding: var(--defiant-space-6); }
+.defiant-p-8 { padding: var(--defiant-space-8); }
+
+.defiant-flex {
+  display: flex;
+}
+
+.defiant-items-center {
+  align-items: center;
+}
+
+.defiant-justify-between {
+  justify-content: space-between;
+}
+
+.defiant-gap-2 {
+  gap: var(--defiant-space-2);
+}
+
+.defiant-gap-4 {
+  gap: var(--defiant-space-4);
+}
+
+.defiant-w-full {
+  width: 100%;
+}
+
+.defiant-h-full {
+  height: 100%;
+}
+
+.defiant-hidden {
+  display: none;
+}
+
+.defiant-block {
+  display: block;
+}
+
+.defiant-inline-block {
+  display: inline-block;
+}
